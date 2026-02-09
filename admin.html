@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Central | Lumio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+        .tab-active { color: #3b82f6; border-bottom: 2px solid #3b82f6; }
+    </style>
+</head>
+<body class="pb-20">
+
+    <nav class="p-6 glass sticky top-0 z-50 flex justify-between items-center">
+        <h1 class="font-black text-xl tracking-tighter">ADMIN <span class="text-blue-500">CENTRAL</span></h1>
+        <button onclick="loadData()" class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+            <i class="fas fa-sync-alt text-sm"></i>
+        </button>
+    </nav>
+
+    <div class="flex border-b border-white/5 bg-slate-900/50">
+        <button onclick="switchTab('deposits')" id="depTab" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest tab-active">Deposits</button>
+        <button onclick="switchTab('withdrawals')" id="withTab" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Withdrawals</button>
+    </div>
+
+    <main class="p-6">
+        <div id="loader" class="text-center py-20">
+            <div class="animate-spin inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mb-4"></div>
+            <p class="text-xs text-slate-500 font-bold tracking-widest uppercase">Fetching Pending Requests...</p>
+        </div>
+
+        <!-- Deposits List -->
+        <div id="depositsSection" class="space-y-4"></div>
+
+        <!-- Withdrawals List -->
+        <div id="withdrawalsSection" class="hidden space-y-4"></div>
+    </main>
+
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 glass px-8 py-3 rounded-full text-[10px] font-black uppercase opacity-0 transition-all pointer-events-none z-[100]"></div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyFehy-K1ownMR6jz_Z49KzIqv9dsTmWLp8EgzlBTt520uFtf9ZApATKiWoG4YL5kvWKA/exec';
+
+        async function loadData() {
+            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('depositsSection').innerHTML = '';
+            document.getElementById('withdrawalsSection').innerHTML = '';
+
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'fetchData' })
+                });
+                const data = await res.json();
+                
+                renderDeposits(data.deposits);
+                renderWithdrawals(data.withdrawals);
+            } catch (e) {
+                showToast("Failed to load data");
+            } finally {
+                document.getElementById('loader').classList.add('hidden');
+            }
+        }
+
+        function renderDeposits(list) {
+            const container = document.getElementById('depositsSection');
+            if (list.length === 0) container.innerHTML = '<p class="text-center text-slate-600 py-10">No pending deposits</p>';
+            
+            list.forEach(item => {
+                container.innerHTML += `
+                    <div class="glass p-5 rounded-3xl border-l-4 border-blue-500 space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-[10px] font-black text-slate-500 uppercase">${new Date(item.time).toLocaleString()}</p>
+                                <p class="font-bold text-sm mt-1">${item.email}</p>
+                            </div>
+                            <p class="text-xl font-black text-blue-500">$${item.amount}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="process('processDeposit', '${item.txHash}', 'Approved')" class="flex-1 bg-emerald-600/20 text-emerald-500 py-3 rounded-xl font-bold text-[10px] uppercase">Approve</button>
+                            <button onclick="process('processDeposit', '${item.txHash}', 'Cancelled')" class="flex-1 bg-red-600/20 text-red-500 py-3 rounded-xl font-bold text-[10px] uppercase">Cancel</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderWithdrawals(list) {
+            const container = document.getElementById('withdrawalsSection');
+            if (list.length === 0) container.innerHTML = '<p class="text-center text-slate-600 py-10">No pending withdrawals</p>';
+
+            list.forEach(item => {
+                container.innerHTML += `
+                    <div class="glass p-5 rounded-3xl border-l-4 border-orange-500 space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-[10px] font-black text-slate-500 uppercase">${item.bank}</p>
+                                <p class="font-bold text-sm mt-1">${item.accName}</p>
+                                <p class="text-[10px] text-slate-400 mt-1">${item.accNo}</p>
+                            </div>
+                            <p class="text-xl font-black text-orange-500">$${item.amount}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="process('processWithdrawal', '${item.id}', 'Approved')" class="flex-1 bg-emerald-600 py-3 rounded-xl font-bold text-[10px] uppercase">Confirm Paid</button>
+                            <button onclick="process('processWithdrawal', '${item.id}', 'Cancelled')" class="flex-1 bg-red-600/20 text-red-500 py-3 rounded-xl font-bold text-[10px] uppercase">Cancel</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function process(action, id, status) {
+            const payload = { action, status };
+            if (action === 'processDeposit') payload.txHash = id;
+            else payload.withdrawId = id;
+
+            showToast("Processing...");
+            try {
+                const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(status + " successfully");
+                    loadData();
+                }
+            } catch (e) {
+                showToast("Operation failed");
+            }
+        }
+
+        function switchTab(tab) {
+            const depT = document.getElementById('depTab');
+            const withT = document.getElementById('withTab');
+            const depS = document.getElementById('depositsSection');
+            const withS = document.getElementById('withdrawalsSection');
+
+            if (tab === 'deposits') {
+                depT.classList.add('tab-active'); withT.classList.remove('tab-active');
+                depS.classList.remove('hidden'); withS.classList.add('hidden');
+            } else {
+                withT.classList.add('tab-active'); depT.classList.remove('tab-active');
+                withS.classList.remove('hidden'); depS.classList.add('hidden');
+            }
+        }
+
+        function showToast(m) {
+            const t = document.getElementById('toast');
+            t.innerText = m; t.style.opacity = 1;
+            setTimeout(() => t.style.opacity = 0, 3000);
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>

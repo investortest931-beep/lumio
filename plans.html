@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumio AI | Trading Bots</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #020617; color: #f1f5f9; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .progress-bg { height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #2563eb, #60a5fa); transition: width 1.5s ease; }
+        .buy-btn:active { transform: scale(0.96); }
+    </style>
+</head>
+<body class="pb-28">
+
+    <!-- Top Navigation -->
+    <header class="p-6 sticky top-0 bg-slate-950/80 backdrop-blur-xl z-50 flex items-center justify-between border-b border-white/5">
+        <button onclick="location.href='dashboard.html'" class="w-10 h-10 rounded-full glass flex items-center justify-center">
+            <i class="fas fa-chevron-left text-slate-400"></i>
+        </button>
+        <h1 class="font-bold text-lg tracking-tight">Investment Plans</h1>
+        <div class="w-10"></div>
+    </header>
+
+    <div class="p-6 space-y-8 max-w-lg mx-auto">
+        <!-- Section: Active Bots -->
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Active Operations</h2>
+                <span id="activeCount" class="bg-blue-600/20 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="activeContainer" class="space-y-4">
+                <div class="p-12 glass rounded-[2.5rem] flex flex-col items-center justify-center space-y-4">
+                    <div class="w-8 h-8 border-2 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+                    <p class="text-slate-500 text-[10px] font-bold uppercase">Syncing Nodes...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Bot Market -->
+        <section>
+            <h2 class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-4">Bot Marketplace</h2>
+            <div id="marketContainer" class="grid gap-4">
+                <!-- Market Cards -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Activation Modal -->
+    <div id="buyModal" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden z-[100] flex items-end sm:items-center justify-center p-4">
+        <div class="glass w-full max-w-sm rounded-[3rem] p-8 space-y-6 transform transition-transform">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-robot text-blue-500 text-2xl"></i>
+                </div>
+                <h3 id="mName" class="text-2xl font-bold">...</h3>
+                <p class="text-slate-400 text-sm">Bot Activation Details</p>
+            </div>
+            
+            <div class="bg-slate-900/50 rounded-3xl p-5 space-y-3">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400">Fixed Cost</span>
+                    <span id="mCost" class="font-bold text-blue-400">$0.00</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400">Daily Payout</span>
+                    <span id="mDaily" class="font-bold text-emerald-400">$0.00</span>
+                </div>
+                <div class="flex justify-between items-center text-sm border-t border-white/5 pt-3">
+                    <span class="text-slate-400">Cycle Duration</span>
+                    <span id="mDur" class="font-bold">0 Days</span>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button onclick="closeModal()" class="flex-1 py-4 font-bold text-slate-500">Cancel</button>
+                <button id="confirmBtn" class="flex-[2] bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl font-bold buy-btn shadow-lg shadow-blue-600/30">Activate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 right-0 glass border-t border-white/5 px-10 py-6 flex justify-between items-center z-50 rounded-t-[2.5rem]">
+        <a href="dashboard.html" class="text-slate-500"><i class="fas fa-home text-xl"></i></a>
+        <a href="plans.html" class="text-blue-500"><i class="fas fa-microchip text-xl"></i></a>
+        <a href="referral.html" class="text-slate-500"><i class="fas fa-users text-xl"></i></a>
+        <a href="profile.html" class="text-slate-500"><i class="fas fa-user text-xl"></i></a>
+    </nav>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwK6aiwUiRJGYCBDaz0k-ejRxhJHoTbcxmOsBqU_14OmN8BOAuKf-DUUEB8ybXjr1X1pw/exec';
+        const user = JSON.parse(localStorage.getItem('lumio'));
+        let selected = null;
+
+        if (!user) window.location.href = 'signup.html';
+
+        async function init() {
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'fetchPlans', email: user.email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    renderMarket(data.available);
+                    renderActive(data.active, data.available);
+                }
+            } catch (e) {
+                document.getElementById('activeContainer').innerHTML = `<p class="text-center text-red-500 text-xs">Node Connection Error</p>`;
+            }
+        }
+
+        function renderActive(active, available) {
+            const container = document.getElementById('activeContainer');
+            document.getElementById('activeCount').textContent = active.length;
+
+            if (!active.length) {
+                container.innerHTML = `<div class="p-10 text-center glass rounded-[2.5rem] text-slate-500 text-xs font-bold uppercase tracking-widest">No Active Bots</div>`;
+                return;
+            }
+
+            container.innerHTML = active.map(item => {
+                const spec = available.find(a => a.plan_id === item.plan_id);
+                if (!spec) return '';
+                
+                const start = new Date(item.start);
+                const end = new Date(item.expiry);
+                const now = new Date();
+                
+                const elapsed = Math.max(0, (now - start));
+                const totalTime = (end - start);
+                const progress = Math.min(100, (elapsed / totalTime) * 100);
+                
+                const daysElapsed = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+                const totalProfit = (spec.daily * daysElapsed).toFixed(2);
+
+                return `
+                    <div class="p-6 glass rounded-[2.5rem] space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-slate-200">${spec.name}</h4>
+                                <p class="text-[9px] text-blue-500 font-bold uppercase tracking-tighter">Instance: ${item.id}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-emerald-400 font-bold">+$${totalProfit}</p>
+                                <p class="text-[9px] text-slate-500 uppercase font-black">Total Earned</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-[9px] font-bold text-slate-500 uppercase">
+                                <span>Cycle Progress</span>
+                                <span>${progress.toFixed(1)}%</span>
+                            </div>
+                            <div class="progress-bg"><div class="progress-bar" style="width: ${progress}%"></div></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderMarket(available) {
+            const container = document.getElementById('marketContainer');
+            container.innerHTML = available.map(p => `
+                <div onclick='openModal(${JSON.stringify(p)})' class="p-6 glass rounded-[2.5rem] flex justify-between items-center buy-btn cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20">
+                            <i class="fas fa-bolt text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">${p.name}</h4>
+                            <p class="text-xs text-slate-500">$${p.cost} Cost • ${p.duration}D</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-blue-400 font-bold">$${p.daily}</p>
+                        <p class="text-[9px] text-slate-500 uppercase font-black">Daily</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openModal(p) {
+            selected = p;
+            document.getElementById('mName').textContent = p.name;
+            document.getElementById('mCost').textContent = '$' + p.cost.toFixed(2);
+            document.getElementById('mDaily').textContent = '$' + p.daily;
+            document.getElementById('mDur').textContent = p.duration + ' Days';
+            document.getElementById('buyModal').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('buyModal').classList.add('hidden'); }
+
+        document.getElementById('confirmBtn').onclick = async () => {
+            const btn = document.getElementById('confirmBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Activating...';
+
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'purchaseBot',
+                        email: user.email,
+                        planId: selected.plan_id,
+                        amount: selected.cost,
+                        duration: selected.duration
+                    })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    location.reload();
+                } else {
+                    alert(result.message);
+                }
+            } catch (e) {
+                alert("Transaction failed. Check network.");
+            }
+            btn.disabled = false;
+            btn.textContent = 'Activate';
+        };
+
+        init();
+    </script>
+</body>
+</html>

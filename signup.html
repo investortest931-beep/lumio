@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Lumio AI | Registration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .input-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); outline: none; transition: 0.3s; width: 100%; }
+        .input-box:focus { border-color: #2563eb; background: rgba(37, 99, 235, 0.05); }
+    </style>
+</head>
+<body class="min-h-screen py-12 px-6 flex items-center justify-center">
+
+    <div class="w-full max-w-lg space-y-8">
+        <div class="text-center">
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 rotate-3 shadow-lg shadow-blue-600/20">
+                <i class="fas fa-gem text-white text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-black tracking-tighter">CREATE ACCOUNT</h1>
+            <p class="text-slate-500 text-sm mt-1 font-medium">Start your AI investment journey</p>
+        </div>
+
+        <div class="glass p-8 rounded-[2.5rem] shadow-2xl">
+            <div id="msgBox" class="hidden mb-6 p-4 rounded-2xl text-xs font-bold text-center border"></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-1 md:col-span-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Full Name</label>
+                    <input type="text" id="fullName" class="input-box px-6 py-4 rounded-2xl text-sm" placeholder="John Doe">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Email Address</label>
+                    <input type="email" id="email" class="input-box px-6 py-4 rounded-2xl text-sm" placeholder="john@example.com">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Phone Number</label>
+                    <input type="tel" id="phone" class="input-box px-6 py-4 rounded-2xl text-sm" placeholder="08012345678">
+                </div>
+
+                <div class="space-y-1 md:col-span-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Referral Email (Required)</label>
+                    <input type="email" id="refEmail" class="input-box px-6 py-4 rounded-2xl text-sm border-blue-500/30" placeholder="referral@email.com">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Password</label>
+                    <input type="password" id="pass" class="input-box px-6 py-4 rounded-2xl text-sm" placeholder="Min 8 chars">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Confirm Password</label>
+                    <input type="password" id="confirmPass" class="input-box px-6 py-4 rounded-2xl text-sm" placeholder="Repeat password">
+                </div>
+            </div>
+
+            <button onclick="register()" id="regBtn" class="w-full bg-blue-600 hover:bg-blue-700 mt-8 py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95 shadow-lg shadow-blue-600/30">
+                Register Now
+            </button>
+
+            <p class="text-center mt-6 text-slate-500 text-xs font-bold">
+                ALREADY HAVE AN ACCOUNT? <a href="login.html" class="text-blue-500 underline ml-1">LOGIN</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkP8jd79oB5wqr2yB8lPVI-ucA0ICFxPMvOHiRdY3V_Jazqbeia5XoOGP_6YuKZrZdRQ/exec';
+
+        // 1. Automatically collect Referral from URL
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const ref = urlParams.get('ref');
+            if (ref) {
+                document.getElementById('refEmail').value = decodeURIComponent(ref);
+                document.getElementById('refEmail').readOnly = true; // Optional: Lock it
+            }
+        };
+
+        async function register() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const referredBy = document.getElementById('refEmail').value.trim();
+            const password = document.getElementById('pass').value;
+            const confirmPass = document.getElementById('confirmPass').value;
+            const btn = document.getElementById('regBtn');
+
+            // 2. Client Side Validations
+            if (!fullName || !email || !phone || !referredBy || !password) {
+                return showMsg("All fields are compulsory", "red");
+            }
+            if (password.length < 8) {
+                return showMsg("Password must be at least 8 characters long", "red");
+            }
+            if (password !== confirmPass) {
+                return showMsg("Passwords do not match", "red");
+            }
+
+            btn.disabled = true;
+            btn.innerText = "CREATING ACCOUNT...";
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'signup',
+                        fullName,
+                        email,
+                        phone,
+                        referredBy,
+                        password
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMsg("Success! Redirecting to login...", "emerald");
+                    // Optionally save to local storage immediately
+                    localStorage.setItem('lumio', JSON.stringify(result.user));
+                    setTimeout(() => window.location.href = 'login.html', 2000);
+                } else {
+                    showMsg(result.message, "red");
+                }
+            } catch (err) {
+                showMsg("Network error. Please try again.", "red");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "REGISTER NOW";
+            }
+        }
+
+        function showMsg(txt, color) {
+            const box = document.getElementById('msgBox');
+            box.innerText = txt;
+            box.className = `mb-6 p-4 rounded-2xl text-xs font-bold text-center border bg-${color}-500/10 text-${color}-500 border-${color}-500/20`;
+            box.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

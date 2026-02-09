@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit | Lumio AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .input-field { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); outline: none; transition: 0.3s; }
+        .input-field:focus { border-color: #2563eb; background: rgba(37, 99, 235, 0.05); }
+        .error-glow { border-color: #ef4444 !important; background: rgba(239, 68, 68, 0.05) !important; }
+    </style>
+</head>
+<body class="min-h-screen pb-24">
+
+    <!-- Header -->
+    <header class="p-6 flex items-center justify-between">
+        <a href="dashboard.html" class="w-10 h-10 glass rounded-xl flex items-center justify-center">
+            <i class="fas fa-chevron-left text-slate-400"></i>
+        </a>
+        <h1 class="font-black tracking-tighter text-xl">DEPOSIT FUNDS</h1>
+        <div class="w-10"></div>
+    </header>
+
+    <div class="p-6 max-w-md mx-auto space-y-6">
+        
+        <!-- Calculator Card -->
+        <div id="step1" class="glass rounded-[2.5rem] p-8 space-y-6">
+            <div class="space-y-2">
+                <div class="flex justify-between items-center px-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500">Amount in Dollars ($)</label>
+                    <span class="text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-1 rounded-md">Min: $2.00</span>
+                </div>
+                <input type="number" id="usdAmount" oninput="convert()" class="input-field w-full px-6 py-5 rounded-2xl text-2xl font-black text-blue-500" placeholder="0.00" min="2">
+                <p id="minError" class="hidden text-[10px] font-bold text-red-500 ml-2 mt-1">Minimum deposit is $2.00</p>
+            </div>
+
+            <div class="bg-blue-600/10 border border-blue-500/20 rounded-2xl p-6 flex justify-between items-center">
+                <div>
+                    <p class="text-[9px] font-black uppercase text-blue-400">You Pay (NGN)</p>
+                    <p id="ngnDisplay" class="text-xl font-extrabold">₦ 0.00</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[9px] font-black uppercase text-slate-500">Rate</p>
+                    <p class="text-xs font-bold text-slate-300">₦1,500 / $1</p>
+                </div>
+            </div>
+
+            <button onclick="initiateDeposit()" id="mainBtn" class="w-full bg-blue-600 py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-blue-600/20 active:scale-95 transition-all">
+                Generate Payment Details
+            </button>
+        </div>
+
+        <!-- Payment Details Card (Hidden initially) -->
+        <div id="step2" class="hidden glass rounded-[2.5rem] p-8 space-y-6 border-emerald-500/20">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h3 class="font-bold">Transfer the exact amount</h3>
+                <p id="finalNaira" class="text-emerald-400 font-black text-2xl">₦ 0.00</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="p-4 bg-white/5 rounded-2xl flex justify-between items-center">
+                    <div>
+                        <p class="text-[8px] font-black text-slate-500 uppercase">Bank Name</p>
+                        <p class="text-sm font-bold">Kuda Microfinance Bank</p>
+                    </div>
+                    <button onclick="copy('Kuda Microfinance Bank')" class="text-blue-500"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="p-4 bg-white/5 rounded-2xl flex justify-between items-center">
+                    <div>
+                        <p class="text-[8px] font-black text-slate-500 uppercase">Account Number</p>
+                        <p class="text-sm font-bold tracking-widest">2012345678</p>
+                    </div>
+                    <button onclick="copy('2012345678')" class="text-blue-500"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="p-4 bg-white/5 rounded-2xl flex justify-between items-center">
+                    <div>
+                        <p class="text-[8px] font-black text-slate-500 uppercase">Account Name</p>
+                        <p class="text-sm font-bold">Lumio Technologies</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-orange-500/10 border border-orange-500/20 p-4 rounded-2xl">
+                <p class="text-[10px] text-orange-200 leading-relaxed italic">
+                    <i class="fas fa-info-circle mr-1"></i> After transfer, your balance will be updated within 5-30 minutes upon admin verification.
+                </p>
+            </div>
+
+            <button onclick="window.location.href='dashboard.html'" class="w-full py-4 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                I have made the transfer
+            </button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="toast" class="fixed top-10 left-1/2 -translate-x-1/2 glass px-8 py-3 rounded-full text-[10px] font-black uppercase opacity-0 transition-all pointer-events-none z-[100]"></div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyYeZdj4QCJ5EALmrrvgo3f3W1Gc55vkmEoIiuj2ZA7zTyuf49JzqdzOwePnS0XmGNY/exec';
+        const user = JSON.parse(localStorage.getItem('lumio'));
+        const RATE = 1500;
+        const MIN_DEPOSIT = 2;
+
+        if (!user) window.location.href = 'login.html';
+
+        function convert() {
+            const input = document.getElementById('usdAmount');
+            const usd = input.value;
+            const naira = usd * RATE;
+            document.getElementById('ngnDisplay').innerText = `₦ ${naira.toLocaleString()}`;
+            
+            // Clear error UI if user starts typing valid amount
+            if (usd >= MIN_DEPOSIT) {
+                input.classList.remove('error-glow');
+                document.getElementById('minError').classList.add('hidden');
+            }
+        }
+
+        async function initiateDeposit() {
+            const amountInput = document.getElementById('usdAmount');
+            const amount = parseFloat(amountInput.value);
+            const btn = document.getElementById('mainBtn');
+            const errorText = document.getElementById('minError');
+
+            if (!amount || amount < MIN_DEPOSIT) {
+                amountInput.classList.add('error-glow');
+                errorText.classList.remove('hidden');
+                showToast(`Minimum deposit is $${MIN_DEPOSIT}`);
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "PROCESSING...";
+
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        action: 'initiateDeposit', 
+                        email: user.email, 
+                        amount: amount 
+                    })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    document.getElementById('finalNaira').innerText = `₦ ${data.naira.toLocaleString()}`;
+                    document.getElementById('step1').classList.add('hidden');
+                    document.getElementById('step2').classList.remove('hidden');
+                    showToast("Payment Details Generated");
+                }
+            } catch (e) {
+                showToast("Connection failed. Try again.");
+                btn.disabled = false;
+                btn.innerText = "Generate Payment Details";
+            }
+        }
+
+        function copy(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast("Copied to clipboard");
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.opacity = '1';
+            setTimeout(() => t.style.opacity = '0', 3000);
+        }
+    </script>
+</body>
+</html>

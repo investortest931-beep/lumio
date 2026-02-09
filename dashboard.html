@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard | Lumio AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .gradient-text { background: linear-gradient(90deg, #60a5fa, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .bottom-nav { border-top: 1px solid rgba(255, 255, 255, 0.05); }
+        /* Hide scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 pb-24">
+
+    <!-- Header Section -->
+    <header class="p-6 flex justify-between items-center sticky top-0 bg-slate-950/80 backdrop-blur-md z-40">
+        <div>
+            <p class="text-slate-400 text-xs font-medium uppercase tracking-wider">Welcome back,</p>
+            <h1 id="userName" class="text-xl font-bold">...</h1>
+        </div>
+        <div class="relative">
+            <div class="w-10 h-10 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center">
+                <i class="fas fa-user-circle text-blue-400 text-xl"></i>
+            </div>
+            <span id="kycBadge" class="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-500 border-2 border-slate-950 rounded-full"></span>
+        </div>
+    </header>
+
+    <main class="px-6 space-y-6">
+        
+        <!-- Balance Card -->
+        <div class="bg-blue-600 rounded-[2rem] p-8 shadow-2xl shadow-blue-600/20 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+                <i class="fas fa-gem text-8xl rotate-12"></i>
+            </div>
+            <div class="relative z-10">
+                <p class="text-blue-100/80 text-sm font-medium">Total Wallet Balance</p>
+                <h2 class="text-4xl font-bold mt-1">$<span id="walletBalance">0.00</span></h2>
+                
+                <div class="flex gap-3 mt-8">
+                    <button onclick="location.href='deposit.html'" class="flex-1 bg-white text-blue-600 font-bold py-3 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                        <i class="fas fa-arrow-down text-sm"></i> Deposit
+                    </button>
+                    <button onclick="location.href='withdraw.html'" class="flex-1 bg-blue-700/50 text-white font-bold py-3 rounded-2xl flex items-center justify-center gap-2 border border-blue-400/20 active:scale-95 transition-transform">
+                        <i class="fas fa-arrow-up text-sm"></i> Withdraw
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="glass-card p-5 rounded-3xl">
+                <i class="fas fa-robot text-blue-400 mb-3"></i>
+                <p class="text-slate-400 text-xs font-medium">Active Bots</p>
+                <p id="activePlans" class="text-lg font-bold">0</p>
+            </div>
+            <div class="glass-card p-5 rounded-3xl">
+                <i class="fas fa-chart-line text-emerald-400 mb-3"></i>
+                <p class="text-slate-400 text-xs font-medium">Total Profit</p>
+                <p class="text-lg font-bold text-emerald-400">+$0.00</p>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">Recent Activities</h3>
+                <button class="text-blue-400 text-sm font-medium">See All</button>
+            </div>
+            
+            <div id="transactionList" class="space-y-3">
+                <!-- Skeleton Loading -->
+                <div class="animate-pulse flex items-center gap-4 p-4 glass-card rounded-2xl">
+                    <div class="w-12 h-12 bg-slate-800 rounded-xl"></div>
+                    <div class="flex-1 space-y-2">
+                        <div class="h-4 bg-slate-800 rounded w-1/2"></div>
+                        <div class="h-3 bg-slate-800 rounded w-1/3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom App Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-slate-950/90 backdrop-blur-xl bottom-nav px-8 py-4 z-50">
+        <div class="flex justify-between items-center max-w-lg mx-auto">
+            <button class="flex flex-col items-center text-blue-500">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span class="text-[10px] font-bold uppercase">Home</span>
+            </button>
+            <button onclick="location.href='plans.html'" class="flex flex-col items-center text-slate-500">
+                <i class="fas fa-microchip text-xl mb-1"></i>
+                <span class="text-[10px] font-bold uppercase">Bots</span>
+            </button>
+            <button onclick="location.href='referral.html'" class="flex flex-col items-center text-slate-500">
+                <i class="fas fa-users text-xl mb-1"></i>
+                <span class="text-[10px] font-bold uppercase">Refer</span>
+            </button>
+            <button onclick="location.href='profile.html'" class="flex flex-col items-center text-slate-500">
+                <i class="fas fa-cog text-xl mb-1"></i>
+                <span class="text-[10px] font-bold uppercase">Profile</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycby2AtBhDCldFs4iy9CNYuLip7t_YIaYCii_ff9Tb6Iam99DqI8HXy4qF_RxzWjprTk/exec'; // Replace with dashboard.gs deployment URL
+
+        // 1. Auth Guard
+        const userSession = JSON.parse(localStorage.getItem('lumio'));
+        if (!userSession) {
+            window.location.href = 'login.html';
+        }
+
+        async function fetchDashboard() {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'getDashboardData',
+                        email: userSession.email
+                    })
+                });
+                
+                // Note: If using 'no-cors', you won't get this data. 
+                // Use standard deployment with 'Anyone' access and normal fetch.
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateUI(data);
+                }
+            } catch (error) {
+                console.error("Dashboard Fetch Error:", error);
+                // For demo/offline:
+                simulateUI();
+            }
+        }
+
+        function updateUI(data) {
+            document.getElementById('userName').textContent = data.user.full_name;
+            document.getElementById('walletBalance').textContent = parseFloat(data.user.wallet_balance).toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('activePlans').textContent = data.activePlans;
+            
+            const kycBadge = document.getElementById('kycBadge');
+            kycBadge.className = `absolute -bottom-1 -right-1 w-4 h-4 border-2 border-slate-950 rounded-full ${data.user.kyc_status === 'Verified' ? 'bg-emerald-500' : 'bg-yellow-500'}`;
+
+            renderTransactions(data.recentTransactions);
+        }
+
+        function renderTransactions(txs) {
+            const container = document.getElementById('transactionList');
+            if (txs.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-slate-500 text-sm">No recent activities</div>';
+                return;
+            }
+
+            container.innerHTML = txs.map(tx => `
+                <div class="glass-card p-4 rounded-3xl flex items-center gap-4 transition-transform active:scale-[0.98]">
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center ${tx.type === 'Deposit' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}">
+                        <i class="fas ${tx.type === 'Deposit' ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-sm">${tx.type}</p>
+                        <p class="text-slate-400 text-[10px]">${new Date(tx.date).toLocaleDateString()}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-sm ${tx.type === 'Deposit' ? 'text-emerald-400' : 'text-slate-100'}">
+                            ${tx.type === 'Deposit' ? '+' : '-'}$${parseFloat(tx.amount).toFixed(2)}
+                        </p>
+                        <p class="text-[10px] ${tx.status === 'Completed' || tx.status === 'Approved' ? 'text-emerald-500' : 'text-yellow-500'} uppercase font-bold">
+                            ${tx.status}
+                        </p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Mock data for immediate visual if script isn't linked yet
+        function simulateUI() {
+            document.getElementById('userName').textContent = userSession.name || "User";
+            renderTransactions([]);
+        }
+
+        window.onload = fetchDashboard;
+    </script>
+    <!-- Add this at the bottom of your dashboard.html body -->
+
+<!-- Custom App Alert UI -->
+<div id="appDownloadAlert" class="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="glass w-full max-w-sm rounded-[2.5rem] p-8 border border-white/10 shadow-2xl transform translate-y-20 transition-transform duration-500 bg-slate-900">
+        <!-- Close Button -->
+        <button onclick="closeAppAlert()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="text-center">
+            <!-- Icon -->
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 rotate-3 shadow-lg shadow-blue-600/30">
+                <i class="fas fa-mobile-alt text-white text-3xl"></i>
+            </div>
+
+            <h3 class="text-xl font-black tracking-tighter mb-2 uppercase">Experience Lumio App</h3>
+            <p class="text-slate-400 text-sm font-medium mb-8 leading-relaxed">
+                Get faster access, instant push notifications, and a smoother trading bot experience on our mobile app.
+            </p>
+
+            <div class="space-y-3">
+                <a href="#" class="block w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all active:scale-95">
+                    <i class="fab fa-google-play mr-2"></i> Download for Android
+                </a>
+                <button onclick="closeAppAlert()" class="block w-full py-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-300">
+                    Maybe Later
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * DASHBOARD APP PROMOTION LOGIC
+     */
+    function showAppAlert() {
+        // Check if user has already seen it this session to avoid annoyance
+        if (!sessionStorage.getItem('lumio_app_prompt')) {
+            setTimeout(() => {
+                const overlay = document.getElementById('appDownloadAlert');
+                const modal = overlay.querySelector('div');
+                
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                modal.classList.remove('translate-y-20');
+            }, 2000); // Show 2 seconds after dashboard loads
+        }
+    }
+
+    function closeAppAlert() {
+        const overlay = document.getElementById('appDownloadAlert');
+        const modal = overlay.querySelector('div');
+        
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        modal.classList.add('translate-y-20');
+        
+        // Mark as seen for this session
+        sessionStorage.setItem('lumio_app_prompt', 'true');
+    }
+
+    // Auto-trigger on load
+    window.addEventListener('DOMContentLoaded', showAppAlert);
+</script>
+
+<style>
+    /* Ensure the alert matches the Lumio theme */
+    #appDownloadAlert .glass {
+        background: linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(2, 6, 23, 1) 100%);
+        backdrop-filter: blur(20px);
+    }
+</style>
+</body>
+</html>
