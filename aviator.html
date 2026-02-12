@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviator Predictor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        canvas { max-width: 800px; margin: 20px auto; display: block; }
+    </style>
+</head>
+<body>
+    <h1>Aviator Game Predictor</h1>
+    <p>Add new crash multiplier:</p>
+    <input type="number" id="newNum" step="0.01" min="1">
+    <button onclick="addNumber()">Add</button>
+    <p>Current Prediction for Next: <span id="pred">Calculating...</span></p>
+    <h2>Actual Multipliers Chart (Log Scale)</h2>
+    <canvas id="actualChart"></canvas>
+    <h2>Predicted Multipliers Chart (Log Scale)</h2>
+    <canvas id="predChart"></canvas>
+
+    <script>
+        const initialData = [1.13, 2.68, 2.38, 1.09, 1.65, 2.66, 10.86, 1.01, 1.00, 16.74, 7.47, 2.35, 8.59, 1.85, 3.27, 7.65, 2.63, 1.39, 68.35, 4.48, 3.99, 2.78, 4.14, 1.06, 1.40, 40.82, 3.00, 7.12, 2.18, 3.58, 1.08, 1.34, 1.12, 22.90, 1.78, 1.25, 1.21, 9.70, 2.09, 2.84, 1.04, 1.21, 3.52, 1.40, 14.79, 1.60, 1.61, 2.01, 1.33];
+
+        let history = JSON.parse(localStorage.getItem('aviatorHistory')) || initialData;
+        let actualChart, predChart;
+
+        function save() {
+            localStorage.setItem('aviatorHistory', JSON.stringify(history));
+        }
+
+        function calculatePrediction() {
+            if (history.length < 5) {
+                return { value: null, over2: 'Not enough data' };
+            }
+            const last5 = history.slice(-5);
+            const avg = last5.reduce((a, b) => a + b, 0) / 5;
+            const over2 = avg > 2 ? 'Over 2' : 'Under 2';
+            return { value: avg, over2 };
+        }
+
+        function updatePrediction() {
+            const pred = calculatePrediction();
+            document.getElementById('pred').innerText = pred.over2 + (pred.value ? ` (Predicted: ${pred.value.toFixed(2)}x)` : '');
+        }
+
+        function getPredictedValues() {
+            const predicted = [];
+            for (let i = 5; i < history.length; i++) {
+                const last5 = history.slice(i - 5, i);
+                const avg = last5.reduce((a, b) => a + b, 0) / 5;
+                predicted.push(avg);
+            }
+            return predicted;
+        }
+
+        function updateCharts() {
+            // Actual Chart
+            const actualLabels = Array.from({ length: history.length }, (_, i) => i + 1);
+            if (actualChart) actualChart.destroy();
+            actualChart = new Chart(document.getElementById('actualChart'), {
+                type: 'line',
+                data: {
+                    labels: actualLabels,
+                    datasets: [{
+                        label: 'Actual Multipliers',
+                        data: history,
+                        borderColor: 'blue',
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Multiplier (log scale)' }
+                        },
+                        x: { title: { display: true, text: 'Round' } }
+                    }
+                }
+            });
+
+            // Predicted Chart
+            const predictedValues = getPredictedValues();
+            const predLabels = Array.from({ length: predictedValues.length }, (_, i) => i + 6); // Starting from round 6
+            if (predChart) predChart.destroy();
+            predChart = new Chart(document.getElementById('predChart'), {
+                type: 'line',
+                data: {
+                    labels: predLabels,
+                    datasets: [{
+                        label: 'Predicted Multipliers',
+                        data: predictedValues,
+                        borderColor: 'green',
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Predicted Multiplier (log scale)' }
+                        },
+                        x: { title: { display: true, text: 'Round' } }
+                    }
+                }
+            });
+        }
+
+        function addNumber() {
+            const input = document.getElementById('newNum');
+            const num = parseFloat(input.value);
+            if (!isNaN(num) && num >= 1) {
+                history.push(num);
+                save();
+                updateCharts();
+                updatePrediction();
+                input.value = '';
+            } else {
+                alert('Please enter a valid multiplier >= 1');
+            }
+        }
+
+        // Initial update
+        updateCharts();
+        updatePrediction();
+    </script>
+</body>
+</html>
