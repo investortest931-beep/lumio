@@ -3,147 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Referrals | Lumio AI</title>
+    <title>Refer & Earn | XMONIE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .gradient-text { background: linear-gradient(90deg, #60a5fa, #2563eb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .btn-blue { background: #2563eb; box-shadow: 0 10px 20px -10px rgba(37, 99, 235, 0.5); }
-        .btn-blue:active { transform: scale(0.96); }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; }
+        .glass-panel { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        .refer-gradient { background: linear-gradient(135deg, #16a34a 0%, #065f46 100%); }
     </style>
 </head>
-<body class="pb-24">
+<body class="text-slate-100 min-h-screen">
 
-    <!-- Header -->
-    <div class="p-6 flex items-center justify-between sticky top-0 bg-slate-950/80 backdrop-blur-lg z-50">
-        <button onclick="history.back()" class="w-10 h-10 rounded-full glass flex items-center justify-center">
-            <i class="fas fa-arrow-left text-sm"></i>
-        </button>
-        <span class="font-extrabold text-sm uppercase tracking-widest text-slate-400">Affiliate</span>
-        <div class="w-10"></div>
-    </div>
+    <header class="p-6 flex items-center gap-4 border-b border-slate-800 bg-slate-950/50 sticky top-0 z-40 backdrop-blur-md">
+        <a href="dashboard.html" class="p-2 bg-slate-900 rounded-xl text-slate-400">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </a>
+        <h1 class="text-xl font-bold">Referrals</h1>
+    </header>
 
-    <div class="p-6 space-y-6 max-w-md mx-auto">
-        <!-- Hero Card -->
-        <div class="glass rounded-[2.5rem] p-8 text-center space-y-4 relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-600/10 blur-[50px] rounded-full"></div>
-            <div class="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mx-auto">
-                <i class="fas fa-users-crown text-blue-500 text-2xl"></i>
-            </div>
-            <h2 class="text-3xl font-extrabold">Invite & <span class="gradient-text">Earn 10%</span></h2>
-            <p class="text-slate-400 text-sm">Get instant 10% commission on every deposit made by your friends and 5% of every deposit made by your friends friends.</p>
-        </div>
-
-        <!-- Referral Link Box -->
-        <div class="space-y-3">
-            <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Your Unique Link</p>
-            <div class="glass rounded-3xl p-2 flex items-center">
-                <input id="refUrl" type="text" readonly value="..." class="bg-transparent border-none outline-none flex-1 px-4 text-xs font-bold text-blue-400">
-                <button onclick="copyRef()" class="btn-blue px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-wider">Copy</button>
-            </div>
-        </div>
-
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-2 gap-4">
-            <div class="glass rounded-[2rem] p-6 space-y-1">
-                <p class="text-[9px] font-bold text-slate-500 uppercase">Total Referrals</p>
-                <h4 id="refCount" class="text-2xl font-extrabold">0</h4>
-            </div>
-            <div class="glass rounded-[2rem] p-6 space-y-1">
-                <p class="text-[9px] font-bold text-slate-500 uppercase">Total Bonus</p>
-                <h4 id="totalBonus" class="text-2xl font-extrabold text-emerald-400">$0.00</h4>
-            </div>
-        </div>
-
-        <!-- History -->
-        <div>
-            <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4 ml-2 text-center">Commission History</h3>
-            <div id="historyList" class="space-y-3">
-                <div class="text-center p-12 glass rounded-[2rem] text-slate-500 text-xs">
-                    <i class="fas fa-spinner fa-spin mb-2 text-blue-500"></i><br>Syncing blockchain...
+    <main class="p-6 max-w-xl mx-auto pb-32">
+        
+        <!-- Summary Dashboard -->
+        <div class="refer-gradient rounded-[2.5rem] p-8 mb-8 text-white relative overflow-hidden shadow-2xl shadow-green-900/20">
+            <div class="relative z-10">
+                <p class="text-green-100 text-[10px] font-black uppercase tracking-[0.2em] mb-2 opacity-80">Total Bonus Earned</p>
+                <h2 class="text-5xl font-black mb-8">₦<span id="totalEarnings">0.00</span></h2>
+                
+                <div class="grid grid-cols-2 gap-4 pt-6 border-t border-white/20">
+                    <div>
+                        <p class="text-green-100 text-[10px] font-bold uppercase opacity-70">Referred Users</p>
+                        <p class="text-2xl font-black" id="totalCount">0</p>
+                    </div>
+                    <div>
+                        <p class="text-green-100 text-[10px] font-bold uppercase opacity-70">Reward Rate</p>
+                        <p class="text-2xl font-black">₦100</p>
+                    </div>
                 </div>
             </div>
+            <i data-lucide="gift" class="absolute -right-6 -bottom-6 w-48 h-48 text-white/10 -rotate-12"></i>
         </div>
-    </div>
 
-    <!-- Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 glass border-t border-white/5 px-10 py-6 flex justify-between items-center z-50 rounded-t-[2.5rem]">
-        <a href="dashboard.html" class="text-slate-500"><i class="fas fa-home text-xl"></i></a>
-        <a href="plans.html" class="text-slate-500"><i class="fas fa-microchip text-xl"></i></a>
-        <a href="referral.html" class="text-blue-500"><i class="fas fa-users text-xl"></i></a>
-        <a href="profile.html" class="text-slate-500"><i class="fas fa-user text-xl"></i></a>
-    </nav>
+        <!-- Referral Link Section -->
+        <section class="glass-panel rounded-[2rem] p-6 mb-8">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <i data-lucide="share-2" class="w-4 h-4 text-green-500"></i> Your Referral Link
+            </h3>
+            <div class="flex items-center gap-2 bg-slate-950 rounded-2xl p-2 border border-slate-800">
+                <input type="text" id="refLink" readonly class="bg-transparent border-none text-xs text-slate-300 flex-1 px-3 outline-none" value="Loading...">
+                <button onclick="copyRefLink()" class="bg-green-600 hover:bg-green-500 text-white px-5 py-3 rounded-xl text-xs font-bold flex items-center gap-2 transition-all active:scale-95">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Copy
+                </button>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-4 leading-relaxed italic">
+                Earn ₦100 every time a friend signs up using your code and funds their wallet for the first time.
+            </p>
+        </section>
 
-    <div id="toast" class="fixed bottom-28 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest px-6 py-3 rounded-full shadow-2xl transition-all opacity-0 pointer-events-none z-[100]">
-        Copied to clipboard
-    </div>
+        <!-- Referral History -->
+        <section>
+            <div class="flex items-center justify-between mb-4 px-2">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Recent Activity</h3>
+                <span class="text-[10px] bg-slate-800 px-3 py-1 rounded-full text-slate-400 font-bold" id="activityBadge">0 Users</span>
+            </div>
+            
+            <div id="referralList" class="space-y-3">
+                <!-- Skeleton Loader -->
+                <div class="animate-pulse space-y-3">
+                    <div class="h-20 bg-slate-900/50 rounded-2xl border border-slate-800"></div>
+                    <div class="h-20 bg-slate-900/50 rounded-2xl border border-slate-800"></div>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby8sRSgXQCZqmS2vzJWevBCwJWj3c9LYKWfo4oIuNUayBMFM1kq6axbgssciNq2xglI-Q/exec';
-        const user = JSON.parse(localStorage.getItem('lumio'));
+        // REPLACE THIS WITH YOUR DEPLOYED WEB APP URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSI-aebqs3lRmu0Z0xrYtPbuw1ZGRHo9OwjMghbCinqPl8_oGnGRZAUgyys-BgJfDT/exec';
+        const session = JSON.parse(localStorage.getItem('XMONIE'));
+        if (!session) window.location.href = 'login.html';
 
-        if (!user) window.location.href = 'login.html';
+        lucide.createIcons();
 
-        // Set Link
-        const myRefLink = `${window.location.origin}/signup.html?ref=${encodeURIComponent(user.email)}`;
-        document.getElementById('refUrl').value = myRefLink;
+        // 1. Generate Referral Link
+        const referralCode = session.user.referralCode || 'XMONIE';
+        const signupUrl = `${window.location.origin}/register.html?ref=${referralCode}`;
+        document.getElementById('refLink').value = signupUrl;
 
-        async function fetchStats() {
+        async function fetchReferrals() {
             try {
-                const res = await fetch(SCRIPT_URL, {
+                const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'fetchReferralData', email: user.email })
+                    body: JSON.stringify({
+                        action: 'getReferralData',
+                        userId: session.user.uid
+                    })
                 });
-                const data = await res.json();
-                if (data.success) {
-                    document.getElementById('refCount').innerText = data.count;
-                    document.getElementById('totalBonus').innerText = `$${data.totalBonus.toFixed(2)}`;
-                    renderHistory(data.history);
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    renderUI(result);
+                } else {
+                    console.error(result.message);
                 }
-            } catch (e) {
-                console.error(e);
+            } catch (err) {
+                console.error("Connection failed");
             }
         }
 
-        function renderHistory(list) {
-            const container = document.getElementById('historyList');
-            if (!list || list.length === 0) {
-                container.innerHTML = `<div class="p-10 text-center glass rounded-[2rem] text-slate-500 text-[10px] font-bold uppercase tracking-widest">No bonuses earned yet</div>`;
-                return;
+        function renderUI(data) {
+            document.getElementById('totalEarnings').innerText = Number(data.stats.totalEarnings).toLocaleString();
+            document.getElementById('totalCount').innerText = data.stats.totalCount;
+            document.getElementById('activityBadge').innerText = `${data.stats.totalCount} Users`;
+
+            const listEl = document.getElementById('referralList');
+            if (data.list.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-12 glass-panel rounded-3xl">
+                        <i data-lucide="users" class="w-12 h-12 mx-auto text-slate-700 mb-4"></i>
+                        <p class="text-slate-500 text-sm font-bold">No referrals yet.</p>
+                        <p class="text-slate-600 text-xs mt-1">Share your link to start earning!</p>
+                    </div>
+                `;
+            } else {
+                listEl.innerHTML = data.list.map(user => `
+                    <div class="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-green-600/10 text-green-500 rounded-full flex items-center justify-center font-bold text-lg">
+                                ${user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">${user.name}</h4>
+                                <p class="text-[10px] text-slate-500 mt-1">${new Date(user.date).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs font-black text-green-500">+₦${user.reward}</p>
+                            <span class="text-[9px] text-slate-500 uppercase font-bold">Bonus</span>
+                        </div>
+                    </div>
+                `).reverse().join('');
             }
-
-            container.innerHTML = list.map(item => `
-                <div class="glass rounded-3xl p-5 flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-emerald-500/10 rounded-full flex items-center justify-center">
-                            <i class="fas fa-arrow-down-left text-emerald-500 text-xs"></i>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black uppercase text-slate-200">${item.referee.split('@')[0]}</p>
-                            <p class="text-[9px] text-slate-500 font-bold uppercase">${new Date(item.date).toLocaleDateString()}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-emerald-400 font-bold">+$${item.amount.toFixed(2)}</p>
-                        <p class="text-[8px] text-slate-500 uppercase font-black">Commission</p>
-                    </div>
-                </div>
-            `).join('');
+            lucide.createIcons();
         }
 
-        function copyRef() {
-            const el = document.getElementById('refUrl');
-            el.select();
-            document.execCommand('copy');
-            const t = document.getElementById('toast');
-            t.style.opacity = '1';
-            setTimeout(() => t.style.opacity = '0', 2000);
+        function copyRefLink() {
+            const copyText = document.getElementById("refLink");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            
+            const btn = event.currentTarget;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Copied`;
+            lucide.createIcons();
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+                lucide.createIcons();
+            }, 2000);
         }
 
-        fetchStats();
+        // Initialize
+        fetchReferrals();
     </script>
 </body>
 </html>

@@ -3,192 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile | Lumio AI</title>
+    <title>My Profile | XMONIE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .input-field { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.3s; }
-        .input-field:focus { border-color: #2563eb; background: rgba(37, 99, 235, 0.05); outline: none; }
-        .kyc-verified { color: #10b981; background: rgba(16, 185, 129, 0.1); }
-        .kyc-pending { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; }
+        .profile-gradient { background: linear-gradient(180deg, #16a34a 0%, #020617 100%); }
+        .glass-card { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
     </style>
 </head>
-<body class="pb-28">
+<body class="text-slate-100 min-h-screen pb-20">
 
-    <!-- Header -->
-    <header class="p-6 sticky top-0 bg-slate-950/80 backdrop-blur-xl z-50 flex items-center justify-between">
-        <h1 class="text-xl font-extrabold tracking-tight">Account Settings</h1>
-        <button onclick="logout()" class="text-slate-500 text-sm font-bold uppercase tracking-widest">Logout</button>
-    </header>
-
-    <div class="p-6 space-y-8 max-w-lg mx-auto">
-        
-        <!-- Avatar Section -->
-        <div class="flex flex-col items-center space-y-4">
-            <div class="relative">
-                <div class="w-24 h-24 rounded-[2rem] bg-gradient-to-tr from-blue-600 to-blue-400 p-1">
-                    <div class="w-full h-full rounded-[1.8rem] bg-slate-950 flex items-center justify-center text-3xl font-black italic text-blue-500" id="avatarInitial">
-                        L
-                    </div>
-                </div>
-                <div id="kycBadge" class="absolute -bottom-1 -right-1 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-tighter">
-                    ...
-                </div>
-            </div>
-            <div class="text-center">
-                <h2 id="dispName" class="text-xl font-extrabold text-white">Loading...</h2>
-                <p id="dispEmail" class="text-slate-500 text-xs"></p>
-            </div>
-        </div>
-
-        <!-- Wallet Summary -->
-        <div class="grid grid-cols-2 gap-4">
-            <div class="glass p-5 rounded-3xl">
-                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Balance</p>
-                <p id="statBal" class="text-lg font-extrabold text-blue-400">$0.00</p>
-            </div>
-            <div class="glass p-5 rounded-3xl">
-                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Deposits</p>
-                <p id="statDep" class="text-lg font-extrabold text-slate-200">$0.00</p>
-            </div>
-        </div>
-
-        <!-- Form Section -->
-        <div class="glass rounded-[2.5rem] p-8 space-y-6">
-            <div class="space-y-4">
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Full Name</label>
-                    <input type="text" id="inpName" class="input-field w-full px-6 py-4 rounded-2xl text-sm font-semibold" placeholder="John Doe">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Phone Number</label>
-                    <input type="tel" id="inpPhone" class="input-field w-full px-6 py-4 rounded-2xl text-sm font-semibold" placeholder="+1 234 567 890">
-                </div>
-            </div>
-
-            <button onclick="saveProfile()" id="saveBtn" class="w-full bg-blue-600 py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-blue-600/20 active:scale-95 transition-all">
-                Save Changes
+    <!-- Top Profile Section -->
+    <div class="profile-gradient pt-12 pb-8 px-6 text-center">
+        <div class="flex justify-between items-center mb-8">
+            <a href="dashboard.html" class="p-2 bg-white/10 rounded-xl backdrop-blur-md">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <h1 class="font-bold">Profile Settings</h1>
+            <button onclick="logout()" class="p-2 bg-red-500/10 text-red-500 rounded-xl backdrop-blur-md">
+                <i data-lucide="log-out" class="w-5 h-5"></i>
             </button>
         </div>
 
-        <!-- Security & Support -->
-        <div class="space-y-3">
-            <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Account Actions</p>
-            <div class="glass rounded-[2rem] overflow-hidden">
-                <button onclick="alert('Contact support to verify KYC')" class="w-full flex items-center justify-between p-5 hover:bg-white/5 transition-all">
-                    <div class="flex items-center gap-4 text-sm font-bold">
-                        <i class="fas fa-shield-check text-blue-500"></i> Identity Verification
-                    </div>
-                    <i class="fas fa-chevron-right text-xs text-slate-600"></i>
-                </button>
-                <div class="h-[1px] bg-white/5 mx-5"></div>
-                <button onclick="location.href='forget.html'" class="w-full flex items-center justify-between p-5 hover:bg-white/5 transition-all">
-                    <div class="flex items-center gap-4 text-sm font-bold">
-                        <i class="fas fa-lock text-slate-400"></i> Change Password
-                    </div>
-                    <i class="fas fa-chevron-right text-xs text-slate-600"></i>
-                </button>
-                <div class="h-[1px] bg-white/5 mx-5"></div>
-                <button onclick="confirmDelete()" class="w-full flex items-center justify-between p-5 hover:bg-white/5 transition-all text-red-500">
-                    <div class="flex items-center gap-4 text-sm font-bold">
-                        <i class="fas fa-trash-alt"></i> Delete Account
-                    </div>
-                </button>
+        <div class="relative inline-block mb-4">
+            <div class="w-24 h-24 bg-slate-900 rounded-full border-4 border-slate-950 flex items-center justify-center text-3xl font-black text-green-500 shadow-2xl mx-auto">
+                <span id="initials">...</span>
+            </div>
+            <div class="absolute bottom-0 right-0 w-8 h-8 bg-green-600 rounded-full border-4 border-slate-950 flex items-center justify-center">
+                <i data-lucide="camera" class="w-3 h-3 text-white"></i>
+            </div>
+        </div>
+        
+        <h2 id="userName" class="text-2xl font-black">Loading...</h2>
+        <p id="userEmail" class="text-slate-400 text-sm">Please wait...</p>
+    </div>
+
+    <main class="px-6 -mt-4">
+        <!-- Stats Row -->
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="glass-card p-5 rounded-[2rem] text-center">
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Total Funded</p>
+                <p class="text-lg font-black text-green-500">₦<span id="statFunded">0</span></p>
+            </div>
+            <div class="glass-card p-5 rounded-[2rem] text-center">
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Total Orders</p>
+                <p class="text-lg font-black text-white" id="statOrders">0</p>
             </div>
         </div>
 
-    </div>
+        <!-- Account Info -->
+        <section class="space-y-4">
+            <h3 class="text-xs font-black uppercase tracking-widest text-slate-500 ml-2">Personal Information</h3>
+            
+            <div class="glass-card rounded-[2rem] overflow-hidden">
+                <div class="p-5 flex items-center gap-4 border-b border-slate-800">
+                    <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center text-slate-400">
+                        <i data-lucide="phone" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">Phone Number</p>
+                        <p id="userPhone" class="font-bold text-sm">---</p>
+                    </div>
+                </div>
 
-    <!-- Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 glass border-t border-white/5 px-10 py-6 flex justify-between items-center z-50 rounded-t-[2.5rem]">
-        <a href="dashboard.html" class="text-slate-500"><i class="fas fa-home text-xl"></i></a>
-        <a href="plans.html" class="text-slate-500"><i class="fas fa-microchip text-xl"></i></a>
-        <a href="referral.html" class="text-slate-500"><i class="fas fa-users text-xl"></i></a>
-        <a href="profile.html" class="text-blue-500"><i class="fas fa-user text-xl"></i></a>
-    </nav>
+                <div class="p-5 flex items-center gap-4 border-b border-slate-800">
+                    <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center text-slate-400">
+                        <i data-lucide="hash" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">Referral Code</p>
+                        <p id="userRef" class="font-bold text-sm text-green-500">---</p>
+                    </div>
+                </div>
 
-    <div id="toast" class="fixed top-10 left-1/2 -translate-x-1/2 glass px-8 py-3 rounded-full text-xs font-black uppercase opacity-0 transition-all pointer-events-none"></div>
+                <div class="p-5 flex items-center gap-4">
+                    <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center text-slate-400">
+                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase">Member Since</p>
+                        <p id="userJoined" class="font-bold text-sm">---</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
+        <!-- Danger Zone -->
+        <section class="mt-12">
+            <button onclick="logout()" class="w-full bg-slate-900 border border-slate-800 text-red-500 py-5 rounded-[2rem] font-black flex items-center justify-center gap-3 active:scale-95 transition-all">
+                <i data-lucide="log-out" class="w-5 h-5"></i>
+                Sign Out of Account
+            </button>
+            <p class="text-center text-[10px] text-slate-600 mt-6 font-bold uppercase tracking-widest">XMONIE VERSION 2.1.0</p>
+        </section>
+    </main>
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxunycrsgrVe70S9Ue33uAZCOWPUez36I-m2XdzNhFk1UVR24FGrhz_KP339JywTjWu/exec';
-        const user = JSON.parse(localStorage.getItem('lumio'));
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhSq8F8XQ7PpPWB6S9wgQumiEAtpLHB3GHW0v-hEa0q4fGm7HRAj8TPqmKu2uqyO_i/exec';
+        let session = JSON.parse(localStorage.getItem('XMONIE'));
 
-        if (!user) window.location.href = 'login.html';
+        if (!session) window.location.href = 'login.html';
+        lucide.createIcons();
 
         async function loadProfile() {
             try {
                 const res = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'getProfile', email: user.email })
-                });
-                const data = await res.json();
-                
-                if (data.success) {
-                    const u = data.user;
-                    document.getElementById('dispName').innerText = u.full_name;
-                    document.getElementById('dispEmail').innerText = u.email;
-                    document.getElementById('avatarInitial').innerText = u.full_name.charAt(0).toUpperCase();
-                    document.getElementById('inpName').value = u.full_name;
-                    document.getElementById('inpPhone').value = u.phone;
-                    document.getElementById('statBal').innerText = `$${Number(u.wallet_balance).toFixed(2)}`;
-                    document.getElementById('statDep').innerText = `$${Number(u.total_deposited).toFixed(2)}`;
-                    
-                    const kBadge = document.getElementById('kycBadge');
-                    kBadge.innerText = u.kyc_status === 'Verified' ? 'Verified' : 'Unverified';
-                    kBadge.className = `absolute -bottom-1 -right-1 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-tighter ${u.kyc_status === 'Verified' ? 'kyc-verified' : 'kyc-pending'}`;
-                }
-            } catch (e) {
-                console.error("Failed to load profile", e);
-            }
-        }
-
-        async function saveProfile() {
-            const btn = document.getElementById('saveBtn');
-            const name = document.getElementById('inpName').value;
-            const phone = document.getElementById('inpPhone').value;
-
-            btn.innerText = "SAVING...";
-            btn.disabled = true;
-
-            try {
-                const res = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ 
-                        action: 'updateProfile', 
-                        email: user.email,
-                        full_name: name,
-                        phone: phone
+                    body: JSON.stringify({
+                        action: 'getProfileData',
+                        userId: session.user.uid
                     })
                 });
-                const data = await res.json();
-                showToast(data.message);
-                loadProfile();
-            } catch (e) {
-                showToast("Update failed. Try again.");
-            } finally {
-                btn.innerText = "SAVE CHANGES";
-                btn.disabled = false;
-            }
-        }
+                const result = await res.json();
 
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.style.opacity = '1';
-            setTimeout(() => t.style.opacity = '0', 3000);
+                if (result.status === 'success') {
+                    const u = result.user;
+                    const s = result.stats;
+
+                    document.getElementById('userName').innerText = u.name;
+                    document.getElementById('userEmail').innerText = u.email;
+                    document.getElementById('userPhone').innerText = u.phone;
+                    document.getElementById('userRef').innerText = u.refCode;
+                    document.getElementById('userJoined').innerText = new Date(u.joined).toLocaleDateString();
+                    document.getElementById('initials').innerText = u.name.charAt(0).toUpperCase();
+                    
+                    document.getElementById('statFunded').innerText = s.totalDeposit.toLocaleString();
+                    document.getElementById('statOrders').innerText = s.transCount;
+                }
+            } catch (err) {
+                console.error("Profile load error");
+            }
         }
 
         function logout() {
-            localStorage.removeItem('lumio');
-            window.location.href = 'login.html';
-        }
-
-        function confirmDelete() {
-            if(confirm("Are you sure? This will permanently delete your account and funds.")) {
-                alert("Please contact support to process deletion.");
+            if (confirm("Are you sure you want to log out?")) {
+                localStorage.removeItem('XMONIE');
+                window.location.href = 'login.html';
             }
         }
 
